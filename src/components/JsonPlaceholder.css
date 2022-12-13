@@ -1,0 +1,28 @@
+.JsonPlaceholder {
+    margin: 0 100px;
+}
+
+.post {
+    margin: 1em 0;
+    padding: 1em;
+    border: 1px solid #000;
+}
+
+.post h1 {
+    margin-bottom: 1em;
+}
+
+.JsonPlaceholder button {
+    margin: 1em;
+    padding: 1em;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.JsonPlaceholder button:first-child {
+    margin-left: 0;
+}
+
+.JsonPlaceholder button:active {
+    transform: scale(0.98);
+}
