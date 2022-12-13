@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./JsonPlaceholder.css";
+import request from "superagent";
 
 class JsonPlaceholder extends Component {
   constructor(props) {
@@ -32,48 +33,57 @@ class JsonPlaceholder extends Component {
    */
 
   getPosts() {
-    fetch("https://jsonplaceholder.typicode.com/posts")
-      .then((res) => res.json())
-      .then((data) => {
-        this.setState({ posts: data });
+    request
+      .get("https://jsonplaceholder.typicode.com/posts")
+      .end((err, res) => {
+        if (err) {
+          // error handling code here
+          return;
+        }
+        this.setState({ posts: JSON.parse(res.text) });
       });
   }
 
   postPosts() {
-    fetch("https://jsonplaceholder.typicode.com/posts", {
-      method: "POST",
-      body: JSON.stringify({
-        userId: 1,
-        title: "post title",
-        body: "post body",
-      }),
-      headers: {
-        "Content-type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const newPosts = [...this.state.posts, data];
+    const newPost = {
+      userId: 1,
+      title: "new post title",
+      body: "new post body",
+    };
+
+    request
+      .post("https://jsonplaceholder.typicode.com/posts")
+      .set({ "Content-type": "application/json" })
+      .send(newPost) // Since JSON is undoubtedly the most common, it's the default! so we don't need to explicitly write JSON.stringify()
+      .end((err, res) => {
+        if (err) {
+          // error handling code here
+          return;
+        }
+        const newPosts = [...this.state.posts, JSON.parse(res.text)];
         this.setState({ posts: newPosts });
       });
   }
 
   putPosts() {
-    fetch("https://jsonplaceholder.typicode.com/posts/1", {
-      method: "PUT",
-      body: JSON.stringify({
-        userId: 1,
-        title: "Updated title",
-        body: "Updated body",
-      }),
-      headers: {
-        "Content-type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    const updatedPost = {
+      userId: 1,
+      title: "updated title",
+      body: "updated body",
+    };
+
+    request
+      .put("https://jsonplaceholder.typicode.com/posts/1")
+      .set({ "Content-type": "application/json" })
+      .send(updatedPost)
+      .end((err, res) => {
+        if (err) {
+          // error handling code here
+          return;
+        }
+        const newPost = JSON.parse(res.text);
         const newPosts = this.state.posts.map((current) => {
-          if (current.id === data.id) return data;
+          if (current.id === newPost.id) return newPost;
           return current;
         });
         this.setState({ posts: newPosts });
@@ -81,11 +91,13 @@ class JsonPlaceholder extends Component {
   }
 
   deletePosts() {
-    fetch("https://jsonplaceholder.typicode.com/posts/1", {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    request
+      .delete("https://jsonplaceholder.typicode.com/posts/1")
+      .end((err, res) => {
+        if (err) {
+          // error handling code here
+          return;
+        }
         const newPosts = this.state.posts.filter((current) => current.id !== 1);
         this.setState({ posts: newPosts });
       });
